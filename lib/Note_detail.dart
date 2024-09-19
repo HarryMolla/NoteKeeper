@@ -7,25 +7,30 @@ import 'package:intl/intl.dart';
 class addNote extends StatefulWidget {
   final String appBarTitle;
   final Note note;
-  addNote(this.note, this.appBarTitle);
+  final bool isWhite;
+  addNote(this.note, this.appBarTitle, this.isWhite);
 
   @override
-  State<addNote> createState() => _AddNoteState(this.note, this.appBarTitle);
+  State<addNote> createState() =>
+      _AddNoteState(this.note, this.appBarTitle, this.isWhite);
 }
 
 class _AddNoteState extends State<addNote> {
-  _AddNoteState(this.note, this.appBarTitle);
+  _AddNoteState(this.note, this.appBarTitle, this.isWhite);
 
   String appBarTitle;
   Note note;
   DatabaseHelper helper = DatabaseHelper();
+  final bool isWhite;
 
   var someValue = ['High', 'Low'];
-  var smallValue = 'High';
+  var smallValue = null;
   List<String> _priorities = ['High', 'Low'];
 
   TextEditingController titleControler = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  //bool isWhite=false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,39 +38,61 @@ class _AddNoteState extends State<addNote> {
     descriptionController.text = note.description;
 
     return Scaffold(
+      backgroundColor: isWhite ? Color.fromRGBO(0, 22, 17, 0) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: isWhite
+            ? Color.fromRGBO(17, 19, 18, 1)
+            : const Color.fromARGB(255, 240, 240, 240),
         title: Text(
           appBarTitle,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: isWhite ? Colors.white : Colors.black),
         ),
         leading: IconButton(
-          onPressed: () {
-            moveToLastScreen();
-          },
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-        ),
+            onPressed: () {
+              moveToLastScreen();
+            },
+            icon: Icon(Icons.arrow_back),
+            color: isWhite ? Colors.white : Colors.black),
       ),
       body: Container(
         padding: EdgeInsets.all(20),
         child: Center(
           child: Column(
             children: [
-              DropdownButton(
-                value: getPriorityAsString(note.priority),
-                items: someValue.map((String newValue) {
-                  return DropdownMenuItem(
-                    child: Text(newValue),
-                    value: newValue,
-                  );
-                }).toList(),
-                onChanged: (dtValue) {
-                  setState(() {
-                    smallValue = dtValue!;
-                    updatePriorityAsInt(dtValue);
-                  });
-                },
+              Column(
+                children: [
+                  Text('Choose priority', style: TextStyle(color: Colors.grey),),
+                  Container(
+                      decoration: BoxDecoration(
+                         // border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                        padding: EdgeInsets.only(right: 20, left: 20, top: 0),
+                        dropdownColor: isWhite ? Colors.black : Colors.white,
+                        value: getPriorityAsString(note.priority),
+                        items: someValue.map((String newValue) {
+                          return DropdownMenuItem(
+                            child: Text(
+                              newValue,
+                              style: TextStyle(
+                                color: isWhite ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            value: newValue,
+                          );
+                        }).toList(),
+                        onChanged: (dtValue) {
+                          setState(() {
+                            smallValue = dtValue!;
+                            updatePriorityAsInt(dtValue);
+                          });
+                        },
+                      ))),
+                ],
+              ),
+              SizedBox(
+                height: 10,
               ),
               TextFormField(
                 controller: titleControler,
@@ -100,9 +127,10 @@ class _AddNoteState extends State<addNote> {
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Color.fromRGBO(0, 163, 114, 1)),
+                        // backgroundColor: Color.fromRGBO(71, 168, 139, 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                         ),
@@ -112,7 +140,7 @@ class _AddNoteState extends State<addNote> {
                       },
                       child: Text(
                         'Delete',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Color.fromRGBO(0, 163, 114, 1)),
                       ),
                     ),
                   ),
@@ -120,7 +148,7 @@ class _AddNoteState extends State<addNote> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Color.fromRGBO(0, 163, 114, 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                         ),

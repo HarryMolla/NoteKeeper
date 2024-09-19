@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io' if (dart.library.js) 'dart:js_util' as js_util;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/models/note.dart';
 import 'package:flutter_application_1/utils/database_helper.dart';
 import 'package:flutter_application_1/Note_detail.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_application_1/StateFull.dart';
 
 class NoteBook extends StatefulWidget {
   const NoteBook({super.key});
@@ -13,46 +15,87 @@ class NoteBook extends StatefulWidget {
 }
 
 class _NoteBookState extends State<NoteBook> {
+  
   DatabaseHelper databaseHelper = DatabaseHelper();
   List<Note> noteList = [];
   int count = 0;
+  bool isWhite=true;
+  bool iconSwap=true;
+
+  void _backgroundColorsToggle() {
+    setState(() {
+      isWhite = !isWhite;
+    });
+  }
+  
+ void _iconsSwapForToggle(){
+    setState(() {
+      iconSwap=!iconSwap;
+    });
+ }
 
   @override
   Widget build(BuildContext context) {
+     final isWhite = Theme.of(context).scaffoldBackgroundColor == Colors.white;
     if (noteList.isEmpty) {
       updateListView();
     }
 
     return Scaffold(
+      backgroundColor: isWhite? Color.fromRGBO(0, 22, 17, 0): Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue,
-        title: const Text(
+       backgroundColor: isWhite? Color.fromRGBO(17, 19, 18, 1): const Color.fromARGB(255, 240, 240, 240),
+        title: Text(
           'Notebook',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: isWhite? Colors.white: Colors.black
+            )
         ),
+        actions: [
+          CircleAvatar(
+            backgroundColor: isWhite? Colors.white60: Colors.black26,
+           child:  IconButton(
+            onPressed: (){
+           final myState = MyState.of(context);
+              myState?.toggleBackgroundColors(); 
+              _iconsSwapForToggle();
+            }, 
+            icon: Icon(iconSwap? Icons.sunny: Icons.nightlight,color: isWhite? Colors.black: Colors.white,)
+            )
+          ),
+          Container(width: 15, ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color.fromRGBO(0, 163, 114, 1),
         onPressed: () {
-          NavigateToDetail(Note('', '', 2), 'Add note');
+          NavigateToDetail(Note('', '', 2), 'Add note', isWhite);
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Color.fromARGB(255, 228, 210, 210),),
         shape: const OvalBorder(),
       ),
       body: ListView.builder(
         itemCount: count,
         itemBuilder: (context, index) {
-          return ListTile(
+          return Column(
+
+          children: [ 
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 0,),
             onTap: () {
-              NavigateToDetail(noteList[index], "Edit note");
+              NavigateToDetail(noteList[index], "Edit note", isWhite);
             },
-            title: Text(noteList[index].title),
+            title: Text(noteList[index].title, style: TextStyle(color: isWhite? Colors.white: Colors.black),),
             subtitle: Text(
               noteList[index].description,
               style: const TextStyle(color: Colors.grey),
             ),
-            leading: CircleAvatar(
-              backgroundColor: getPriorityColor(noteList[index].priority),
-              child: const Icon(Icons.arrow_right),
+            leading: Container(
+              child: Icon(Icons.donut_small, size: 5, color: Colors.white,),
+              height: 500,
+              width: 8,
+              color:const Color.fromARGB(255, 24, 151, 77),
+              //backgroundColor: getPriorityColor(noteList[index].priority),//dont delete this
             ),
             trailing: IconButton(
               onPressed: () {
@@ -62,7 +105,14 @@ class _NoteBookState extends State<NoteBook> {
                 Icons.delete,
                 color: Colors.grey,
               ),
-            ),
+            ), 
+          ),
+         Divider(
+          thickness: 0.5,
+          height: 0,
+          color: isWhite? const Color.fromARGB(255, 44, 44, 44): const Color.fromARGB(255, 218, 217, 217),
+         )
+          ]
           );
         },
       ),
@@ -93,10 +143,10 @@ class _NoteBookState extends State<NoteBook> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void NavigateToDetail(Note note, String title) async {
+  void NavigateToDetail(Note note, String title,bool isWhite) async {
     bool result= await Navigator.push(context, MaterialPageRoute(
       builder: (context) {
-        return addNote(note, title);
+        return addNote(note, title, isWhite);
       },
     ));
     if (result==true) {
