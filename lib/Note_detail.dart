@@ -68,8 +68,9 @@ class _AddNoteState extends State<addNote> {
                           borderRadius: BorderRadius.circular(5)),
                       child: DropdownButtonHideUnderline(
                           child: DropdownButton(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
                         padding: EdgeInsets.only(right: 20, left: 20, top: 0),
-                        dropdownColor: isWhite ? Colors.black : Colors.white,
+                        dropdownColor: isWhite ? const Color.fromARGB(255, 41, 41, 41) : Colors.white,
                         value: getPriorityAsString(note.priority),
                         items: someValue.map((String newValue) {
                           return DropdownMenuItem(
@@ -99,9 +100,14 @@ class _AddNoteState extends State<addNote> {
                 onChanged: (value) {
                   updateTitle();
                 },
+                style: TextStyle(
+                  color: isWhite? Colors.white: Colors.black
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Type your title...',
-                  labelText: 'Title',
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromRGBO(0, 163, 114, 1)),
+                  ),
+                  hintText: 'Title',
                   border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1),
                     borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -114,9 +120,14 @@ class _AddNoteState extends State<addNote> {
                 onChanged: (value) {
                   updateDescription();
                 },
+                style: TextStyle(
+                  color: isWhite? Colors.white: Colors.black
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Type the note description...',
-                  labelText: 'Description',
+                  hintText: 'Description',
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color.fromRGBO(0, 163, 114, 1))
+                  ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1),
                     borderRadius: BorderRadius.all(Radius.circular(5)),

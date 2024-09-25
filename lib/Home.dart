@@ -36,7 +36,7 @@ class _NoteBookState extends State<NoteBook> {
 
   @override
   Widget build(BuildContext context) {
-     final isWhite = Theme.of(context).scaffoldBackgroundColor == Colors.white;
+     final isWhite = Theme.of(context).scaffoldBackgroundColor == Colors.black;
     if (noteList.isEmpty) {
       updateListView();
     }
@@ -78,10 +78,9 @@ class _NoteBookState extends State<NoteBook> {
         itemCount: count,
         itemBuilder: (context, index) {
           return Column(
-
           children: [ 
             ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 0,),
+              contentPadding: EdgeInsets.all(0),
             onTap: () {
               NavigateToDetail(noteList[index], "Edit note", isWhite);
             },
@@ -91,11 +90,12 @@ class _NoteBookState extends State<NoteBook> {
               style: const TextStyle(color: Colors.grey),
             ),
             leading: Container(
+              margin: EdgeInsets.symmetric(vertical: 0),
               child: Icon(Icons.donut_small, size: 5, color: Colors.white,),
-              height: 500,
-              width: 8,
-              color:const Color.fromARGB(255, 24, 151, 77),
-              //backgroundColor: getPriorityColor(noteList[index].priority),//dont delete this
+              height: 200,
+              width: 6,
+             color:getPriorityColor(noteList[index].priority)
+              //Color: getPriorityColor(noteList[index].priority),//dont delete this
             ),
             trailing: IconButton(
               onPressed: () {
@@ -118,15 +118,14 @@ class _NoteBookState extends State<NoteBook> {
       ),
     );
   }
-
   Color getPriorityColor(int priority) {
     switch (priority) {
       case 1:
-        return Colors.red;
+        return const Color.fromARGB(255, 178, 190, 0);
       case 2:
-        return Colors.yellow;
+        return Color.fromRGBO(0, 163, 114, 1);
       default:
-        return Colors.yellow;
+        return Color.fromRGBO(0, 163, 114, 1);
     }
   }
 
